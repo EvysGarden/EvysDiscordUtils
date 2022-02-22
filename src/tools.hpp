@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace evdu {
     const auto DISCOHOOK_MERGE_PATCH_ROOT = R"(
@@ -32,4 +33,11 @@ namespace evdu {
             }
         }
     )"_json;
-}
+
+    inline size_t curlWriteFunction(void* ptr, size_t size, size_t nmemb, std::string* data)
+    {
+        data->append((char*)ptr, size * nmemb);
+        return size * nmemb;
+    }
+
+} // namespace evdu

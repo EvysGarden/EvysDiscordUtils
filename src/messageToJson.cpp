@@ -1,8 +1,7 @@
 #include "tools.hpp"
 #include <argh.h>
-#include <cpr/api.h>
-#include <cpr/cpr.h>
-#include <cpr/cprtypes.h>
+#include <curl/curl.h>
+#include <curl/easy.h>
 #include <fmt/core.h>
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -54,10 +53,20 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // prepare url
     std::string   url = fmt::format("{}/messages/{}", webhookUrl, messageId);
-    cpr::Response r   = cpr::Get(cpr::Url { url });
 
-    json content = json::parse(r.text);
+    // setup curl for the get request
+    CURL* curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, evdu::curlWriteFunction);
+    std::string response;
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+    auto curlResult = curl_easy_perform(curl);
+    fmt::print("curlcode: {}\n", curlResult);
+
+    json content = json::parse(response);
 
     if (cmdl[{ "-d", "--discohook" }]) { content = evdu::stripForDiscohook(content); }
 
