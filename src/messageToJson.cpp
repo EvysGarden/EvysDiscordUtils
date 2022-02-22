@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     std::string messageId;
     if (!(cmdl({ "-m", "--message" }) >> messageId)) {
         fmt::print("{}Missing message id!\n", evdu::HELP_MESSAGE);
-        return 1;
+        return 2;
     }
 
     // prepare url
@@ -64,7 +64,10 @@ int main(int argc, char* argv[])
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
     auto curlResult = curl_easy_perform(curl);
-    fmt::print("curlcode: {}\n", curlResult);
+    if (curlResult != CURLE_OK) {
+        fmt::print("curl error! (curlcode: {})", curlResult);
+        return 3;
+    }
 
     json content = json::parse(response);
 
