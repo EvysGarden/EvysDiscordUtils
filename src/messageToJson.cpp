@@ -24,7 +24,7 @@ namespace evdu {
 
     json stripForDiscohook(const json& src)
     {
-        auto dst { src };
+        json dst = src;
         dst.merge_patch(DISCOHOOK_MERGE_PATCH_ROOT);
 
         for (auto& embed : dst.at("embeds")) { embed.merge_patch(DISCOHOOK_MERGE_PATCH_EMBED); }
@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
     cpr::Response r   = cpr::Get(cpr::Url { url });
 
     json content = json::parse(r.text);
+    fmt::print("Content: {}\n", content.dump(2));
 
     if (cmdl[{ "-d", "--discohook" }]) { content = evdu::stripForDiscohook(content); }
 
