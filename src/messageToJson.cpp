@@ -58,7 +58,6 @@ int main(int argc, char* argv[])
     cpr::Response r   = cpr::Get(cpr::Url { url });
 
     json content = json::parse(r.text);
-    fmt::print("Content: {}\n", content.dump(2));
 
     if (cmdl[{ "-d", "--discohook" }]) { content = evdu::stripForDiscohook(content); }
 
